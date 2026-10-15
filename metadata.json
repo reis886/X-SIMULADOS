@@ -1,0 +1,6 @@
+{
+  "name": "X SIMULADOS - Plataforma Gratuita de Simulados",
+  "description": "Plataforma brasileira 100% gratuita de simulados online para ENEM, SARESP, Provão Paulista, OBMEP, OBA, FUVEST e Concursos Públicos sem necessidade de cadastro.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
