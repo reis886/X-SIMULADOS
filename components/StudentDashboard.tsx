@@ -32,6 +32,7 @@ interface StudentDashboardProps {
   onSelectSprint: (sprint: QuickSprint) => void;
   userName: string;
   userGoal: string;
+  userAvatar: string;
   onOpenProfileModal: () => void;
 }
 
@@ -40,16 +41,22 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   onSelectSprint,
   userName,
   userGoal,
+  userAvatar,
   onOpenProfileModal
 }) => {
   const [activeTab, setActiveTab] = useState<'todos' | 'enem' | 'concursos' | 'olimpiadas' | 'fundamental'>('todos');
   const [sortOption, setSortOption] = useState(`Recomendados para ${userName}`);
 
-  // Find featured exams matching Image 3
+  const filteredDashboardExams = SAMPLE_EXAMS.filter((exam) => {
+    if (activeTab === 'todos') return true;
+    if (activeTab === 'enem') return exam.category === 'vestibulares';
+    if (activeTab === 'concursos') return exam.category === 'concursos';
+    if (activeTab === 'olimpiadas') return exam.category === 'olimpiadas';
+    if (activeTab === 'fundamental') return exam.category === 'fundamental-medio';
+    return true;
+  });
+
   const enemExam = SAMPLE_EXAMS.find((e) => e.id === 'enem-ciencias-natureza-matematica') || SAMPLE_EXAMS[0];
-  const fuvestExam = SAMPLE_EXAMS.find((e) => e.id === 'fuvest-usp-fase1') || SAMPLE_EXAMS[1];
-  const cebraspeExam = SAMPLE_EXAMS.find((e) => e.id === 'cebraspe-concursos-policiais') || SAMPLE_EXAMS[3];
-  const obmepExam = SAMPLE_EXAMS.find((e) => e.id === 'obmep-olimpiada-matematica') || SAMPLE_EXAMS[2];
 
   return (
     <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
@@ -293,232 +300,112 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               Simulados em Aberto ou Recomendados
             </h2>
           </div>
-          <span className="text-xs text-[#aac9f4]">
-            Acervo 100% liberado para todos
+          <span className="text-xs text-[#aac9f4] font-semibold bg-[#132033] border border-[#1E3E62] px-3 py-1 rounded-full">
+            {filteredDashboardExams.length} simulados disponíveis
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* CARD 1: IN PROGRESS / PAUSED (High Contrast Pristine White Academic Sheet Card) */}
-          <div className="bg-white text-slate-900 rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden flex flex-col justify-between group transition-all transform hover:-translate-y-1 border border-slate-100">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-600 via-rose-500 to-amber-500"></div>
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-[11px] uppercase font-bold tracking-wider">
-                    ENEM 2024 • DIA 2
-                  </span>
-                  <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-semibold flex items-center gap-1">
-                    <PauseCircle className="w-3.5 h-3.5" /> Pausado
-                  </span>
-                </div>
-                <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                  <Hourglass className="w-3.5 h-3.5" /> 2h 14m restantes
-                </span>
-              </div>
+          {filteredDashboardExams.map((exam, index) => {
+            const isPausedEnem = exam.id === 'enem-ciencias-natureza-matematica';
 
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 leading-snug">
-                {enemExam.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 mb-4 line-clamp-2">
-                {enemExam.subtitle}
-              </p>
-
-              {/* Progress Bar */}
-              <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl mb-4 border border-slate-100">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-700 font-semibold">Progresso da Prova</span>
-                  <span className="text-red-700 font-bold">45 de 90 questões (50%)</span>
-                </div>
-                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                  <div className="bg-[#D90429] h-full rounded-full w-1/2"></div>
-                </div>
-                <div className="flex justify-between items-center text-[11px] text-slate-500 pt-1">
-                  <span>Natureza: 45 respondidas</span>
-                  <span>Matemática: 0 respondidas</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-2 text-slate-600 text-xs">
-                <CheckCircle className="w-4 h-4 text-red-600" />
-                <span className="font-medium">TRI Oficial Aplicada</span>
-              </div>
-              <button
-                onClick={() => onSelectExam(enemExam)}
-                className="px-6 py-2.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-red-600/30 flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+            return (
+              <div
+                key={exam.id}
+                className="bg-white text-slate-900 rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden flex flex-col justify-between group transition-all transform hover:-translate-y-1 border border-slate-100"
               >
-                <span>Continuar Prova</span>
-                <Play className="w-4 h-4 fill-white" />
-              </button>
-            </div>
-          </div>
+                <div
+                  className={`absolute top-0 left-0 right-0 h-1.5 ${
+                    isPausedEnem
+                      ? 'bg-gradient-to-r from-red-600 via-rose-500 to-amber-500'
+                      : exam.category === 'concursos'
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-500'
+                      : exam.category === 'olimpiadas'
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500'
+                      : 'bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-500'
+                  }`}
+                ></div>
 
-          {/* CARD 2: FUVEST 2025 MEDICINA */}
-          <div className="bg-white text-slate-900 rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden flex flex-col justify-between group transition-all transform hover:-translate-y-1 border border-slate-100">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-500"></div>
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-[11px] uppercase font-bold tracking-wider">
-                    FUVEST • 1ª FASE
-                  </span>
-                  <span className="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-[11px] font-semibold">
-                    Especial Medicina
-                  </span>
-                </div>
-                <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                  <Clock className="w-3.5 h-3.5" /> 5h 00m
-                </span>
-              </div>
-
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 leading-snug">
-                {fuvestExam.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 mb-4 line-clamp-2">
-                {fuvestExam.subtitle}
-              </p>
-
-              <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl mb-4 text-center border border-slate-100">
-                <div className="border-r border-slate-200">
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Questões</p>
-                  <p className="text-sm sm:text-base text-slate-900 font-bold">90</p>
-                </div>
-                <div className="border-r border-slate-200">
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Dificuldade</p>
-                  <p className="text-sm sm:text-base text-red-600 font-bold">Difícil</p>
-                </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Inscritos</p>
-                  <p className="text-sm sm:text-base text-slate-900 font-bold">4.821</p>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] uppercase font-bold tracking-wider border ${exam.badgeColor}`}>
+                        {exam.badge}
+                      </span>
+                      {isPausedEnem && (
+                        <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-semibold flex items-center gap-1">
+                          <PauseCircle className="w-3.5 h-3.5" /> Pausado
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
+                      <Clock className="w-3.5 h-3.5" /> {exam.durationMinutes} min
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 leading-snug group-hover:text-[#D90429] transition-colors">
+                    {exam.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 mb-4 line-clamp-2">
+                    {exam.subtitle}
+                  </p>
+
+                  {/* Progress bar for paused exam or stats row */}
+                  {isPausedEnem ? (
+                    <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl mb-4 border border-slate-100">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-700 font-semibold">Progresso da Prova</span>
+                        <span className="text-red-700 font-bold">45 de 90 questões (50%)</span>
+                      </div>
+                      <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div className="bg-[#D90429] h-full rounded-full w-1/2"></div>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] text-slate-500 pt-1">
+                        <span>Natureza: 45 respondidas</span>
+                        <span>Matemática: 0 respondidas</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl mb-4 text-center border border-slate-100">
+                      <div className="border-r border-slate-200">
+                        <p className="text-[10px] text-slate-500 uppercase font-semibold">Questões</p>
+                        <p className="text-sm sm:text-base text-slate-900 font-bold">{exam.questionCount}</p>
+                      </div>
+                      <div className="border-r border-slate-200">
+                        <p className="text-[10px] text-slate-500 uppercase font-semibold">Nível</p>
+                        <p className={`text-sm sm:text-base font-bold ${
+                          exam.difficulty === 'Difícil' ? 'text-red-600' : 'text-slate-800'
+                        }`}>
+                          {exam.difficulty}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-slate-500 uppercase font-semibold">Correção</p>
+                        <p className="text-xs sm:text-sm text-slate-700 font-bold truncate">{exam.scoringType}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-xs text-slate-600 flex items-center gap-1 font-medium">
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" /> Gabarito em tempo real
-              </span>
-              <button
-                onClick={() => onSelectExam(fuvestExam)}
-                className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-xs sm:text-sm font-bold shadow-md hover:bg-[#D90429] flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-              >
-                <span>Iniciar Simulado</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* CARD 3: CONCURSO POLÍCIA FEDERAL / PRF */}
-          <div className="bg-white text-slate-900 rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden flex flex-col justify-between group transition-all transform hover:-translate-y-1 border border-slate-100">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 to-teal-500"></div>
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] uppercase font-bold tracking-wider">
-                    CEBRASPE • CERTO / ERRADO
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-xs text-slate-500 font-medium">
+                    {exam.targetGrade}
                   </span>
-                  <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold">
-                    Carreiras Policiais
-                  </span>
-                </div>
-                <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                  <Clock className="w-3.5 h-3.5" /> 4h 30m
-                </span>
-              </div>
-
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 leading-snug">
-                {cebraspeExam.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 mb-4 line-clamp-2">
-                {cebraspeExam.subtitle}
-              </p>
-
-              <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl mb-4 text-center border border-slate-100">
-                <div className="border-r border-slate-200">
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Itens</p>
-                  <p className="text-sm sm:text-base text-slate-900 font-bold">120</p>
-                </div>
-                <div className="border-r border-slate-200">
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Critério</p>
-                  <p className="text-sm sm:text-base text-slate-800 font-bold">1:1 Anulação</p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Simulados Feitos</p>
-                  <p className="text-sm sm:text-base text-emerald-700 font-bold">9.120</p>
+                  <button
+                    onClick={() => onSelectExam(exam)}
+                    className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-md flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer ${
+                      isPausedEnem
+                        ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white hover:shadow-red-600/30'
+                        : 'bg-slate-900 text-white hover:bg-[#D90429]'
+                    }`}
+                  >
+                    <span>{isPausedEnem ? 'Continuar Prova' : 'Iniciar Simulado'}</span>
+                    {isPausedEnem ? <Play className="w-4 h-4 fill-white" /> : <ArrowRight className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-xs text-slate-600 flex items-center gap-1 font-medium">
-                <ShieldAlert className="w-4 h-4 text-teal-600" /> Banco de Jurisprudência 2024
-              </span>
-              <button
-                onClick={() => onSelectExam(cebraspeExam)}
-                className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-xs sm:text-sm font-bold shadow-md hover:bg-[#D90429] flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-              >
-                <span>Iniciar Simulado</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* CARD 4: OBMEP NÍVEL 3 */}
-          <div className="bg-white text-slate-900 rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden flex flex-col justify-between group transition-all transform hover:-translate-y-1 border border-slate-100">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-orange-500"></div>
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-[11px] uppercase font-bold tracking-wider">
-                    OLIMPÍADAS • OBMEP
-                  </span>
-                  <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-[11px] font-semibold">
-                    Nível 3 (Ensino Médio)
-                  </span>
-                </div>
-                <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                  <Clock className="w-3.5 h-3.5" /> 2h 30m
-                </span>
-              </div>
-
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 leading-snug">
-                {obmepExam.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 mb-4 line-clamp-2">
-                {obmepExam.subtitle}
-              </p>
-
-              <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl mb-4 text-center border border-slate-100">
-                <div className="border-r border-slate-200">
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Questões</p>
-                  <p className="text-sm sm:text-base text-slate-900 font-bold">20</p>
-                </div>
-                <div className="border-r border-slate-200">
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Nível</p>
-                  <p className="text-sm sm:text-base text-amber-600 font-bold">Avançado</p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-500 uppercase font-semibold">Pontuação Max</p>
-                  <p className="text-sm sm:text-base text-slate-900 font-bold">100</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-xs text-slate-600 flex items-center gap-1 font-medium">
-                <Trophy className="w-4 h-4 text-amber-600" /> Concorre ao Quadro de Medalhas
-              </span>
-              <button
-                onClick={() => onSelectExam(obmepExam)}
-                className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-xs sm:text-sm font-bold shadow-md hover:bg-[#D90429] flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-              >
-                <span>Iniciar Simulado</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
 
@@ -713,7 +600,19 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
                       {entry.rank}
                     </div>
 
-                    {entry.avatarUrl ? (
+                    {entry.isCurrentUser ? (
+                      <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 ring-2 ring-[#D90429] bg-[#061426]">
+                        <Image
+                          src={userAvatar}
+                          alt={userName}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                          referrerPolicy="no-referrer"
+                          unoptimized={userAvatar.startsWith('data:')}
+                        />
+                      </div>
+                    ) : entry.avatarUrl ? (
                       <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
                         <Image
                           src={entry.avatarUrl}

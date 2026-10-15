@@ -24,6 +24,7 @@ interface NavbarProps {
   onQuickStart: () => void;
   userName: string;
   userGoal: string;
+  userAvatar: string;
   onOpenProfileModal: () => void;
 }
 
@@ -35,6 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onQuickStart,
   userName,
   userGoal,
+  userAvatar,
   onOpenProfileModal
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -156,14 +158,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-2 bg-[#0e1c2f] hover:bg-[#1E3E62] border border-[#1E3E62] p-1 sm:pr-3 rounded-full transition-all text-left"
             title="Personalizar seu perfil de estudos"
           >
-            <div className="relative w-8 h-8 rounded-full overflow-hidden ring-2 ring-[#D90429]">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden ring-2 ring-[#D90429] bg-[#061426] shrink-0">
               <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB4r2q-u2lmYNtPOUInp87qFaCTu6s8dm2zCXzrWBWFDoc2aEDVer7ZEyMKkkeOYgpuKmCkiVOJOYEuxh1LF12dLhaLOT0IvO604g6EFIpzMeqWFJOYmPqX_3EdoeJ80b2ZBog1KTpSiMo1eaahPvLobFUh4-RyXX8drhttqvkMqFbvPDQWIYGUJI08XQHuSlQiBZFSjkRPVQ7CB_hYhE-FPO6gpB6_qA8iJDFO17D_MpPS2pMdMi8SQ"
+                src={userAvatar}
                 alt="Avatar"
                 fill
                 sizes="32px"
                 className="object-cover"
                 referrerPolicy="no-referrer"
+                unoptimized={userAvatar.startsWith('data:')}
               />
             </div>
             <div className="hidden lg:flex flex-col text-xs leading-tight">

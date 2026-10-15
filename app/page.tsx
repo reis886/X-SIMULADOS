@@ -8,7 +8,7 @@ import { ExamPlayer } from '@/components/ExamPlayer';
 import { ExamResults } from '@/components/ExamResults';
 import { Footer } from '@/components/Footer';
 import { ProfileModal } from '@/components/ProfileModal';
-import { SAMPLE_EXAMS, Exam, QuickSprint } from '@/data/exams';
+import { SAMPLE_EXAMS, AVATAR_PRESETS, Exam, QuickSprint } from '@/data/exams';
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<'landing' | 'dashboard' | 'exam' | 'results'>('landing');
@@ -42,14 +42,28 @@ export default function Home() {
     return 'ENEM Medicina';
   });
 
+  const [userAvatar, setUserAvatar] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedAvatar = localStorage.getItem('xsimulados_useravatar');
+        if (savedAvatar) return savedAvatar;
+      } catch {
+        // ignore
+      }
+    }
+    return AVATAR_PRESETS[0].url;
+  });
+
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const handleSaveProfile = (name: string, goal: string) => {
+  const handleSaveProfile = (name: string, goal: string, avatar: string) => {
     setUserName(name);
     setUserGoal(goal);
+    setUserAvatar(avatar);
     try {
       localStorage.setItem('xsimulados_username', name);
       localStorage.setItem('xsimulados_usergoal', goal);
+      localStorage.setItem('xsimulados_useravatar', avatar);
     } catch {
       // ignore
     }
@@ -120,6 +134,7 @@ export default function Home() {
           onQuickStart={() => handleSelectExam(SAMPLE_EXAMS[0])}
           userName={userName}
           userGoal={userGoal}
+          userAvatar={userAvatar}
           onOpenProfileModal={() => setIsProfileModalOpen(true)}
         />
       )}
@@ -144,6 +159,7 @@ export default function Home() {
             onSelectSprint={handleSelectSprint}
             userName={userName}
             userGoal={userGoal}
+            userAvatar={userAvatar}
             onOpenProfileModal={() => setIsProfileModalOpen(true)}
           />
         )}
@@ -185,6 +201,7 @@ export default function Home() {
         onClose={() => setIsProfileModalOpen(false)}
         currentName={userName}
         currentGoal={userGoal}
+        currentAvatar={userAvatar}
         onSave={handleSaveProfile}
       />
     </div>

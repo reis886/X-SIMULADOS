@@ -345,11 +345,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   Acervo Completo & Gratuito
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                Diretório de Provas e Simulados
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3 flex-wrap">
+                <span>Diretório de Provas e Simulados</span>
+                <span className="text-xs font-bold bg-[#132033] border border-[#1E3E62] text-[#ffb3af] px-3 py-1 rounded-full">
+                  {filteredExams.length} Provas Disponíveis
+                </span>
               </h2>
               <p className="text-sm text-[#aac9f4] mt-1">
-                Selecione qualquer simulado para iniciar imediatamente. Cronômetro calibrado e correção pedagógica questão a questão.
+                Selecione qualquer simulado para iniciar imediatamente. Mais de 20 opções oficiais com cronômetro calibrado e correção pedagógica questão a questão.
               </p>
             </div>
 
